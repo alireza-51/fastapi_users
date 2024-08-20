@@ -1,14 +1,25 @@
-from pydantic import BaseModel
+from datetime import datetime
+from pydantic import BaseModel, EmailStr
 
-class UserCreate(BaseModel):
+
+class UserBase(BaseModel):
     username: str
-    email: str
+    email: EmailStr
+
+
+class UserCreate(UserBase):
     password: str
 
-class UserResponse(BaseModel):
+
+class UserResponse(UserBase):
     id: int
-    username: str
-    email: str
+    role: str
+    created: datetime
 
     class Config:
         orm_mode = True
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
