@@ -13,7 +13,7 @@ load_dotenv()
 
 # Setup synchronous database engine for testing
 SQLALCHEMY_DATABASE_URL = os.getenv('TEST_DATABASE_URL')
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Override the get_db dependency to use the synchronous test database
@@ -40,8 +40,13 @@ def client():
 
 @pytest.fixture
 def test_user(db_session):
+    existing_user = db_session.query(User).filter_by(email='user1@test.com').first()
+    if existing_user:
+        # If user exists, return the existing user
+        return existing_user
+
     # Create and return a test user
-    user = User(username="testuser", password="hashedpassword", role="user", email='user@example.com')
+    user = User(username="testnewuser", password="hashedpassword", role="user", email='user1@test.com')
     db_session.add(user)
     db_session.commit()
     db_session.refresh(user)
@@ -49,8 +54,13 @@ def test_user(db_session):
 
 @pytest.fixture
 def admin_user(db_session):
+    existing_user = db_session.query(User).filter_by(email='admin1@test.com').first()
+    if existing_user:
+        # If user exists, return the existing user
+        return existing_user
+
     # Create and return an admin user
-    user = User(username="admin", password="hashedpassword", role="admin", email='admin@example.com')
+    user = User(username="adminnewuser", password="hashedpassword", role="admin", email='admin1@test.com')
     db_session.add(user)
     db_session.commit()
     db_session.refresh(user)
