@@ -8,7 +8,7 @@ from app.models import User
 
 router = APIRouter()
 
-@router.post("/users/", response_model=schemas.UserResponse)
+@router.post("/users/", response_model=schemas.UserResponse, status_code=status.HTTP_201_CREATED)
 async def create_user(user: schemas.UserCreate, db: AsyncSession = Depends(database.get_db)):
     try:
         return await crud.create_user(db=db, user=user)
